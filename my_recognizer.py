@@ -21,5 +21,31 @@ def recognize(models: dict, test_set: SinglesData):
     probabilities = []
     guesses = []
     # TODO implement the recognizer
+    test_sequences = list(test_set.get_all_Xlengths().values())
+    for X, lengths in  test_sequences:
+        best_prob = float("-inf")
+        guess = ""
+        words_prob = {}
+        '''
+        The recognition of a word consists in finding the model that has the best score between the models
+        of all the words in the set.
+        As discussed in the Udacity forum:
+        https://discussions.udacity.com/t/recognizer-implementation/234793/24
+        '''
+        for word, model in models.items():
+            try:
+                prob = model.score(X, lengths)
+                words_prob[word] = prob
+            except:
+                words_prob[word] = float("-inf")
+                continue
+            
+            if prob > best_prob:
+                best_prob = prob
+                guess = word
+
+        probabilities.append(words_prob)
+        guesses.append(guess)
+    
     # return probabilities, guesses
-    raise NotImplementedError
+    return probabilities, guesses
